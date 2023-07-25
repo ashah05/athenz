@@ -45,7 +45,8 @@ public class NotificationCommon {
     public Notification createNotification(Set<String> recipients,
                                            Map<String, String> details,
                                            NotificationToEmailConverter notificationToEmailConverter,
-                                           NotificationToMetricConverter notificationToMetricConverter) {
+                                           NotificationToMetricConverter notificationToMetricConverter,
+                                           NotificationToSlackConverter notificationToSlackConverter) {
 
         if (recipients == null || recipients.isEmpty()) {
             LOGGER.error("Notification requires at least 1 recipient.");
@@ -56,6 +57,7 @@ public class NotificationCommon {
         notification.setDetails(details);
         notification.setNotificationToEmailConverter(notificationToEmailConverter);
         notification.setNotificationToMetricConverter(notificationToMetricConverter);
+        notification.setNotificationToSlackConverter(notificationToSlackConverter);
 
         for (String recipient : recipients) {
             addNotificationRecipient(notification, recipient, true);
@@ -72,7 +74,8 @@ public class NotificationCommon {
     public Notification createNotification(final String recipient,
                                            Map<String, String> details,
                                            NotificationToEmailConverter notificationToEmailConverter,
-                                           NotificationToMetricConverter notificationToMetricConverter) {
+                                           NotificationToMetricConverter notificationToMetricConverter,
+                                           NotificationToSlackConverter notificationToSlackConverter) {
 
         if (recipient == null || recipient.isEmpty()) {
             LOGGER.error("Notification requires a valid recipient");
@@ -83,6 +86,8 @@ public class NotificationCommon {
         notification.setDetails(details);
         notification.setNotificationToEmailConverter(notificationToEmailConverter);
         notification.setNotificationToMetricConverter(notificationToMetricConverter);
+        notification.setNotificationToSlackConverter(notificationToSlackConverter);
+
 
         // if the recipient is a service then we're going to send a notification
         // to the service's domain admin users

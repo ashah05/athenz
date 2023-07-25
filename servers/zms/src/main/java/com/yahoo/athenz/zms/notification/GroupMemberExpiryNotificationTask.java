@@ -38,6 +38,9 @@ public class GroupMemberExpiryNotificationTask implements NotificationTask {
     private final GroupExpiryPrincipalNotificationToEmailConverter groupExpiryPrincipalNotificationToEmailConverter;
     private final GroupExpiryDomainNotificationToMetricConverter groupExpiryDomainNotificationToMetricConverter;
     private final GroupExpiryPrincipalNotificationToToMetricConverter groupExpiryPrincipalNotificationToToMetricConverter;
+    private final GroupExpiryDomainNotificationToSlackConverter groupExpiryDomainNotificationToSlackConverter;
+    private final GroupExpiryPrincipalNotificationToSlackConverter groupExpiryPrincipalNotificationToToSlackConverter;
+
 
     public GroupMemberExpiryNotificationTask(DBService dbService, String userDomainPrefix, NotificationToEmailConverterCommon notificationToEmailConverterCommon) {
         this.dbService = dbService;
@@ -47,6 +50,8 @@ public class GroupMemberExpiryNotificationTask implements NotificationTask {
         this.groupExpiryDomainNotificationToEmailConverter = new GroupExpiryDomainNotificationToEmailConverter(notificationToEmailConverterCommon);
         this.groupExpiryPrincipalNotificationToToMetricConverter = new GroupExpiryPrincipalNotificationToToMetricConverter();
         this.groupExpiryDomainNotificationToMetricConverter = new GroupExpiryDomainNotificationToMetricConverter();
+        this.groupExpiryPrincipalNotificationToSlackConverter = new GroupExpiryPrincipalNotificationToSlackConverter();
+        this.groupExpiryDomainNotificationToSlackConverter = new GroupExpiryDomainNotificationToSlackConverter();
     }
 
     @Override
@@ -64,7 +69,9 @@ public class GroupMemberExpiryNotificationTask implements NotificationTask {
                 groupExpiryPrincipalNotificationToEmailConverter,
                 groupExpiryDomainNotificationToEmailConverter,
                 groupExpiryPrincipalNotificationToToMetricConverter,
-                groupExpiryDomainNotificationToMetricConverter);
+                groupExpiryDomainNotificationToMetricConverter,
+                groupExpiryPrincipalNotificationToSlackConverter,
+                groupExpiryDomainNotificationToSlackConverter);
         return notificationCommon.printNotificationDetailsToLog(notificationDetails, DESCRIPTION, LOGGER);
     }
 
@@ -197,7 +204,7 @@ public class GroupMemberExpiryNotificationTask implements NotificationTask {
             Map<String, String> details = processGroupReminder(domainAdminMap, groupMember);
             if (details.size() > 0) {
                 Notification notification = notificationCommon.createNotification(
-                        groupMember.getMemberName(), details, principalNotificationToEmailConverter, principalNotificationToMetricConverter);
+                        groupMember.getMemberName(), details, principalNotificationToEmailConverter, principalNotificationToMetricConverter, principalNotificationToSlackConverter);
                 if (notification != null) {
                     notificationList.add(notification);
                 }
@@ -344,4 +351,59 @@ public class GroupMemberExpiryNotificationTask implements NotificationTask {
             return new NotificationMetric(attributes);
         }
     }
+
+    public static class GroupExpiryPrincipalNotificationToSlackConverter implements NotificationToSlackConverter {
+        private static final String SLACK_TEMPLATE_PRINCIPAL_EXPIRY = "messages/group-member-expiry-slack.html";
+
+        private final NotificationToSlackConverterCommon notificationToSlackConverterCommon;
+        private final String SlackTemplatePrincipalExpiry;
+
+        public GroupExpiryPrincipalNotificationToSlackConverter(NotificationToSlackConverterCommon notificationToSlackConverterCommon) {
+            this.notificationToSlackConverterCommon = notificationToSlackConverterCommon;
+            SlackTemplatePrincipalExpiry =  notificationToSlackConverterCommon.readContentFromFile(getClass().getClassLoader(), SLACK_TEMPLATE_PRINCIPAL_EXPIRY);
+        }
+
+        private List<LayoutBlock> getPrincipalExpiryBody(Map<String, String> metaDetails) {
+            if (metaDetails == null) {
+                return null;
+            }
+
+            return notificationToSlackConverterCommon.generateBlocksFromJsonTemplate(metaDetails, SlackTemplatePrincipalExpiry);
+        }
+
+        @Override
+        public NotificationSlack getNotificationAsSlack(Notification notification) {
+            List<LayoutBlock> body = getPrincipalExpiryBody(notification.getDetails());
+            //figure out how to get channel id from domain name
+            return new NotificationSlack(channel, body);
+        }
+    }
+
+    public static class GroupExpiryDomainNotificationToSlackConverter implements NotificationToSlackConverter {
+        private static final String SLACK_TEMPLATE_DOMAIN_MEMBER_EXPIRY = "messages/domain-group-member-expiry-slack.html";
+
+        private final NotificationToSlackConverterCommon notificationToSlackConverterCommon;
+        private final String SlackTemplateDomainMemberExpiry;
+
+        public GroupExpiryPrincipalNotificationToSlackConverter(NotificationToSlackConverterCommon notificationToSlackConverterCommon) {
+            this.notificationToSlackConverterCommon = notificationToSlackConverterCommon;
+            SlackTemplatePrincipalExpiry =  notificationToSlackConverterCommon.readContentFromFile(getClass().getClassLoader(), SLACK_TEMPLATE_DOMAIN_MEMBER_EXPIRY);
+        }
+
+        private List<LayoutBlock> getPrincipalExpiryBody(Map<String, String> metaDetails) {
+            if (metaDetails == null) {
+                return null;
+            }
+
+            return notificationToSlackConverterCommon.generateBlocksFromJsonTemplate(metaDetails, SlackTemplateDomainMemberExpiry);
+        }
+
+        @Override
+        public NotificationSlack getNotificationAsSlack(Notification notification) {
+            List<LayoutBlock> body = getPrincipalExpiryBody(notification.getDetails());
+            //figure out how to get channel id from domain name
+            return new NotificationSlack(channel, body);
+        }
+    }
+
 }

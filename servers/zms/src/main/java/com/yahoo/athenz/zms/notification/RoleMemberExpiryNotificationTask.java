@@ -256,4 +256,32 @@ public class RoleMemberExpiryNotificationTask implements NotificationTask {
             return new NotificationMetric(attributes);
         }
     }
+
+    public static class RoleExpiryPrincipalNotificationToSlackConverter implements NotificationToSlackConverter {
+        private static final String SLACK_TEMPLATE_PRINCIPAL_EXPIRY = "messages/role-member-expiry-slack.html";
+
+        private final NotificationToSlackConverterCommon notificationToSlackConverterCommon;
+        private final String RoleTemplatePrincipalExpiry;
+
+        public RoleExpiryPrincipalNotificationToSlackConverter(NotificationToSlackConverterCommon notificationToSlackConverterCommon) {
+            this.notificationToSlackConverterCommon = notificationToSlackConverterCommon;
+            RoleTemplatePrincipalExpiry =  notificationToSlackConverterCommon.readContentFromFile(getClass().getClassLoader(), SLACK_TEMPLATE_PRINCIPAL_EXPIRY);
+        }
+
+        private List<LayoutBlock> getPrincipalExpiryBody(Map<String, String> metaDetails) {
+            if (metaDetails == null) {
+                return null;
+            }
+
+            return notificationToSlackConverterCommon.generateBlocksFromJsonTemplate(metaDetails, RoleTemplatePrincipalExpiry);
+        }
+
+        @Override
+        public NotificationSlack getNotificationAsSlack(Notification notification) {
+            List<LayoutBlock> body = getPrincipalExpiryBody(notification.getDetails());
+            //figure out how to get channel id from domain name
+            return new NotificationSlack(channel, body);
+        }
+    }
+
 }

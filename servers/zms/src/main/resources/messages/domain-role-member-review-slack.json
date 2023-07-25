@@ -1,0 +1,42 @@
+{
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*Domain Membership Review Details*"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "You have one or more principals in your Athenz domain *{0}* whose review date will pass soon:"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*MEMBER*   |   *ROLE*   |   *REVIEW*\n---|---|---\n{tableRows}"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Please review this list and, if necessary, login to [Athenz UI]({1}/domain/{0}/role) to extend their review dates."
+        }
+      }
+    ]
+  }
+  

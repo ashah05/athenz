@@ -1,0 +1,42 @@
+{
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*Domain Group Membership Expiry Details*"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "You have one or more principals in your Athenz domain *{domain}* groups whose access will expire soon:"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*MEMBER*   |   *GROUP*   |   *EXPIRATION*\n---|---|---\n{tableRows}"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Please review this list and, if necessary, login to [Athenz UI]({athenzUiUrl}/domain/{domain}/role) to extend their expiration dates."
+        }
+      }
+    ]
+  }
+  

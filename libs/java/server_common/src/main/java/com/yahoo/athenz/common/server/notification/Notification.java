@@ -34,6 +34,11 @@ public class Notification {
     // Utility class to convert the notification into metric attributes
     private NotificationToMetricConverter notificationToMetricConverter;
 
+    // Utility class to convert the notification into a slack message
+    private NotificationToSlackConverter notificationToSlackConverter;
+
+
+
     public Notification () {
     }
 
@@ -98,6 +103,18 @@ public class Notification {
         return null;
     }
 
+    public Notification setNotificationToSlackConverter(NotificationToSlackConverter notificationToSlackConverter) {
+        this.notificationToSlackConverter = notificationToSlackConverter;
+        return this;
+    }
+
+    public NotificationSlack getNotificationAsSlack() {
+        if (notificationToSlackConverter != null) {
+            return notificationToSlackConverter.getNotificationAsSlack(this);
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -112,6 +129,7 @@ public class Notification {
                 Objects.equals(getDetails(), that.getDetails()) &&
                 Objects.equals(getNotificationAsMetrics(currentTime), that.getNotificationAsMetrics(currentTime)) &&
                 Objects.equals(getNotificationAsEmail(), that.getNotificationAsEmail());
+                Objects.equals(getNotificationAsSlack(), that.getNotificationAsSlack());
     }
 
     @Override
@@ -129,11 +147,16 @@ public class Notification {
         if (notificationToMetricConverter != null) {
             metricConverterClassName = notificationToMetricConverter.getClass().getName();
         }
+        String slackConverterClassName = "";
+        if (notificationToSlackConverter != null) {
+            slackConverterClassName = notificationToSlackConverter.getClass().getName();
+        }
         return "Notification{" +
                 "recipients=" + recipients +
                 ", details=" + details +
                 ", emailConverterClass=" + emailConverterClassName +
                 ", metricConverterClass=" + metricConverterClassName +
+                ", slackConverterClass=" + slackConverterClassName +
                 '}';
     }
 }

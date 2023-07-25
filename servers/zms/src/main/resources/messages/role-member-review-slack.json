@@ -1,0 +1,42 @@
+{
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*Principal Review Details*"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "You are required to review your *{0}* principal's membership in the listed roles:"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*DOMAIN*   |   *ROLE*   |   *REVIEW*\n---|---|---\n{tableRows}"
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Please review this list and, if necessary, follow up with their respective domain administrators to extend those review dates."
+        }
+      }
+    ]
+  }
+  
